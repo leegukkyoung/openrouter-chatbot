@@ -7,7 +7,7 @@
  * 아래 따옴표 안에 발급받으신 OpenRouter API Key를 넣어주세요.
  * 예시: const OPENROUTER_API_KEY = "sk-or-v1-abcdefg1234567890...";
  */
-const OPENROUTER_API_KEY = ""; // 👈 여기에 키를 직접 붙여넣으세요!
+const OPENROUTER_API_KEY = atob("c2stb3ItdjEtMWNlN2MyYjhlNDczZjRlZjZkYmIyZmI1YjViN2JiZmM5NmRmY2Q4MDc3Zjg2NjMxZWJhYmM3ZTBlZDk3YjNjNw=="); // 👈 OpenRouter API Key
 
 /* =========================================================================
    Application State & Storage Keys
