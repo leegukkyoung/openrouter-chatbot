@@ -12,6 +12,13 @@ for (let i = 0; i < _x.length; i += 2) {
 }
 const OPENROUTER_API_KEY = _k;
 
+/**
+ * 🏛️ [서울시 열린데이터광장 공공데이터 API 키]
+ * 발급받으신 서울시 API 키가 있으시면 아래 따옴표 안에 넣으시면 됩니다.
+ * 키가 없으셔도 기본값('sample') 및 백업 데이터로 100% 정상 동작합니다.
+ */
+const SEOUL_OPEN_API_KEY = "4f547773776c616c34334458707644"; // 👈 서울시 공공데이터 API 키
+
 /* =========================================================================
    Application State & Storage Keys
    ========================================================================= */
@@ -258,7 +265,8 @@ function initAppState() {
 async function fetchSeoulPublicData() {
     state.seoulData = [...SAMPLE_SEOUL_EDUCATION_DATA];
     try {
-        const apiUrl = 'http://openAPI.seoul.go.kr:8088/sample/json/ListPublicReservationEducation/1/100/';
+        const apiKey = (typeof SEOUL_OPEN_API_KEY !== 'undefined' && SEOUL_OPEN_API_KEY.trim()) ? SEOUL_OPEN_API_KEY.trim() : 'sample';
+        const apiUrl = `http://openAPI.seoul.go.kr:8088/${apiKey}/json/ListPublicReservationEducation/1/100/`;
         const response = await fetch(apiUrl).catch(() => null);
         if (response && response.ok) {
             const data = await response.json().catch(() => null);
