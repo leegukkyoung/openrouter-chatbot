@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aether AI - OpenRouter Chatbot</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Highlight.js for Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode">
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-logo">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <span class="brand-name">Aether AI</span>
+                </div>
+                <button class="icon-btn new-chat-btn" id="new-chat-btn" title="새 대화 시작">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+
+            <div class="model-quick-select-container">
+                <label for="quick-model-select"><i class="fa-solid fa-microchip"></i> AI 모델 선택</label>
+                <select id="quick-model-select" class="custom-select">
+                    <option value="google/gemini-2.5-flash" selected>Gemini 2.5 Flash (추천)</option>
+                    <option value="google/gemini-2.0-flash-lite-preview-02-05:free">Gemini 2.0 Flash Lite (무료)</option>
+                    <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B Instruct</option>
+                    <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                    <option value="anthropic/claude-3.5-haiku">Claude 3.5 Haiku</option>
+                    <option value="deepseek/deepseek-r1:free">DeepSeek R1 (무료)</option>
+                </select>
+            </div>
+
+            <div class="chat-history-section">
+                <div class="section-title">최근 대화 목록</div>
+                <div class="chat-list" id="chat-list">
+                    <!-- Session items will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="footer-btn" id="open-settings-btn">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>설정 (API 키 / 프롬프트)</span>
+                </button>
+                <button class="footer-btn" id="clear-all-chats-btn">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>모든 대화 삭제</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Navbar -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="icon-btn sidebar-toggle" id="sidebar-toggle" title="사이드바 토글">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="current-chat-title" id="current-chat-title">새로운 대화</div>
+                </div>
+
+                <div class="header-right">
+                    <div class="api-status-badge" id="api-status-badge">
+                        <span class="status-dot"></span>
+                        <span class="status-text" id="status-text">키 확인 중...</span>
+                    </div>
+                    <button class="icon-btn" id="theme-toggle-btn" title="테마 변경">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Chat Scroll Area -->
+            <div class="chat-viewport" id="chat-viewport">
+                <!-- Welcome Screen / Empty State -->
+                <div class="welcome-screen" id="welcome-screen">
+                    <div class="welcome-icon">
+                        <i class="fa-solid fa-sparkles"></i>
+                    </div>
+                    <h2>무엇을 도와드릴까요?</h2>
+                    <p>백엔드 서버 없이 브라우저에서 직접 OpenRouter API를 호출하는 챗봇입니다.<br>아래 프롬프트 카드를 클릭하거나 메시지를 입력해보세요.</p>
+                    
+                    <div class="suggestion-grid">
+                        <div class="suggestion-card" data-prompt="웹 개발에서 HTML, CSS, JavaScript의 역할과 관계를 초보자 눈높이에서 쉽게 설명해줘.">
+                            <i class="fa-solid fa-code"></i>
+                            <div class="card-text">
+                                <strong>웹 기초 개념 설명</strong>
+                                <span>HTML, CSS, JS의 역할과 관계 설명</span>
+                            </div>
+                        </div>
+                        <div class="suggestion-card" data-prompt="JavaScript 브라우저 Fetch API를 사용해 비동기 데이터를 가져오고 에러 처리하는 완벽한 코드 예제를 작성해줘.">
+                            <i class="fa-solid fa-laptop-code"></i>
+                            <div class="card-text">
+                                <strong>Fetch API 샘플 코드</strong>
+                                <span>JS 비동기 데이터 처리 예제 코드 작성</span>
+                            </div>
+                        </div>
+                        <div class="suggestion-card" data-prompt="생산성을 높이기 위한 하루 시간 관리 테크닉 3가지를 추천해줘.">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <div class="card-text">
+                                <strong>시간 관리 아이디어</strong>
+                                <span>생산성을 극대화하는 시간 활용 가이드</span>
+                            </div>
+                        </div>
+                        <div class="suggestion-card" data-prompt="영문 이메일 감사 및 매너 있는 답변 작성 템플릿 2가지를 만들어줘.">
+                            <i class="fa-solid fa-pen-nib"></i>
+                            <div class="card-text">
+                                <strong>비즈니스 영문 이메일</strong>
+                                <span>매너 있는 영어 이메일 템플릿 작성</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="messages-container" id="messages-container">
+                    <!-- Dynamic chat messages go here -->
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-section">
+                <div class="input-box-wrapper">
+                    <textarea 
+                        id="user-input" 
+                        placeholder="메시지를 입력하세요... (Shift+Enter 줄바꿈, Enter 전송)" 
+                        rows="1"
+                    ></textarea>
+                    
+                    <div class="input-actions">
+                        <span class="token-counter" id="char-counter">0 자</span>
+                        <button class="send-btn" id="send-btn" title="메시지 전송">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                        <button class="stop-btn hidden" id="stop-btn" title="답변 생성 중단">
+                            <i class="fa-solid fa-square"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="input-footer-note">
+                    <i class="fa-solid fa-shield-halved"></i> OpenRouter API Direct Connection &bull; 대화 내역은 브라우저 LocalStorage에 저장됩니다.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay hidden" id="settings-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sliders"></i> 챗봇 설정</h3>
+                <button class="icon-btn close-modal-btn" id="close-settings-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="api-key-input">
+                        <span>OpenRouter API Key</span>
+                        <small class="key-notice">코드(`app.js`)의 `OPENROUTER_API_KEY` 변수에 키를 넣어두시면 매번 입력할 필요 없이 자동 실행됩니다.</small>
+                    </label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="api-key-input" placeholder="sk-or-v1-xxxxxxxxxxxxxxxx">
+                        <button class="toggle-password-btn" id="toggle-key-visibility"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="system-prompt-input">시스템 프롬프트 (AI 페르소나)</label>
+                    <textarea id="system-prompt-input" rows="3" placeholder="예: 당신은 친절하고 전문적인 웹 개발 튜터입니다. 한국어로 답변해주세요."></textarea>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="temperature-input">Temperature: <span id="temp-val">0.7</span></label>
+                        <input type="range" id="temperature-input" min="0" max="1" step="0.1" value="0.7">
+                    </div>
+                    <div class="col">
+                        <label for="max-tokens-input">Max Tokens</label>
+                        <input type="number" id="max-tokens-input" min="100" max="8000" step="100" value="2000">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-settings-btn">취소</button>
+                <button class="btn btn-primary" id="save-settings-btn"><i class="fa-solid fa-check"></i> 설정 저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
