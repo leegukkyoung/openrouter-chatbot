@@ -44,7 +44,7 @@ const DEFAULT_SYSTEM_PROMPT = `당신은 서울시 교육 공공서비스예약 
 
 // App State
 let state = {
-    apiKey: OPENROUTER_API_KEY || localStorage.getItem(STORAGE_KEYS.API_KEY) || '',
+    apiKey: localStorage.getItem(STORAGE_KEYS.API_KEY) || (OPENROUTER_API_KEY && OPENROUTER_API_KEY.startsWith('sk-or-') ? OPENROUTER_API_KEY : ''),
     selectedModel: localStorage.getItem(STORAGE_KEYS.MODEL) || 'google/gemini-2.5-flash',
     systemPrompt: localStorage.getItem(STORAGE_KEYS.SYSTEM_PROMPT) || DEFAULT_SYSTEM_PROMPT,
     temperature: parseFloat(localStorage.getItem(STORAGE_KEYS.TEMPERATURE)) || 0.7,
@@ -376,10 +376,13 @@ function setupEventListeners() {
    API Key & Status Helpers
    ========================================================================= */
 function getEffectiveApiKey() {
-    if (OPENROUTER_API_KEY && OPENROUTER_API_KEY.trim() !== '') {
+    if (state.apiKey && state.apiKey.trim() !== '') {
+        return state.apiKey.trim();
+    }
+    if (OPENROUTER_API_KEY && OPENROUTER_API_KEY.startsWith('sk-or-')) {
         return OPENROUTER_API_KEY.trim();
     }
-    return state.apiKey ? state.apiKey.trim() : '';
+    return '';
 }
 
 function updateApiStatusBadge() {
